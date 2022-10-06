@@ -1,0 +1,40 @@
+Pizza,Pepperoni
+Taco,Cheese
+Burger,Onion
+Italian Beef,Peppers
+Taco,Peppers
+Burger,Cheese
+Italian Beef,Peppers
+Burger,Onion
+Italian Beef,Peppers
+Taco,Onion
+Burger,Cheese
+Italian Beef,Peppers
+Pizza,Cheese
+Taco,Cheese
+Burger,Onion
+Italian Beef,Peppers
+Burger,Onoin
+Italian Beef,Mustard
+Burger,Onion
+Italian Beef,Peppers
+Taco,Onion
+Burger,Onion
+Italian Beef,Cheese
+Taco,Onion
+Burger,Cheese
+Italian Beef,Mustard
+Pizza,Onion
+Taco,Cheese
+Burger,Onion
+Italian Beef,Peppers
+Burger,Onion
+Italian Beef,Mustard
+Burger,Onion
+Italian Beef,Peppers
+Taco,Cheese
+Burger,Cheese
+Italian Beef,Cheese
+Italian Beef,Cheese
+Egg Plant, Salt
+Brussels Sprout, Cheese
