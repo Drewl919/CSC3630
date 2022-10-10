@@ -1,90 +1,150 @@
-import java.util.ArrayList;
-
+import lib.FileIO;
+import java.io.FileNotFoundException;
+import java.util.*;
 
 public class OrderManager_Homework2 {
-        ArrayList<OrderItem> orders = new ArrayList<>();
+    HashSet<OrderItem> orders = new HashSet<>();
 
-        public OrderManager_Homework2() {
-        }
-        public void addOrder( OrderItem o){
-            orders.add( o );
-
-        }
-        public boolean gotThisOrder( int id ){
-            // ToDo: Write this method to return O(1) if the id is in the order set
-            //
-            return false;
-        }
-        public ArrayList<OrderItem> findOrders(int oId){
-            // ToDo: Rewrite this method to operation O(1) instead of O(n)
-            ArrayList<OrderItem> retOrder = new ArrayList<>();
-            //boolean firstLine = true;
-            for( OrderItem o : orders ){
-                if ( o.getOrder_id() == oId ){
-                    retOrder.add(o);
-                }
-            }
-            return retOrder;
-        }
-    public ArrayList<OrderItem> getOrdersByState(String inState ){
-            //ToDo: Rewrite this method to be more efficent and use a hash
-        ArrayList<OrderItem> retOrder = new ArrayList<>();
-        //boolean firstLine = true;
-        for( OrderItem o : orders ){
-            if ( o.getStatus().equals(inState) ){
-                retOrder.add(o);
-            }
-        }
-        return retOrder;
+    public OrderManager_Homework2() {
     }
-    // ToDo: Write a method
-    public boolean updateThisOderLineId( int orderId, int lineId, String newStatus ){
-            //ToDo: find the orderId and lineId that matches the input and
-            //      set status to newStatus.
-            // For example:
-            //     updateThisOrderLineId( 1233, 1, "staged" )
-            // Whould update this this item:
-            // From:
-            //       1233;1;4;2;shipped;500
-            // TO:
-            //       1233;1;4;2;staged;500
-            // Returns: True -> If the proper item  is found and updated
-            //          False -> if cannot find the item OR newStatus is NOT
-            //                    new, staged, shipped, picked or delivered.
+    public void addOrder( OrderItem o){
+        orders.add( o );
+    }
+
+    public void getOrdersFromFile(String fName) throws FileNotFoundException {
+        FileIO fio = new FileIO(fName);
+        fio.setFileData();
+        ArrayList<String> inLines = fio.getFileData();
+        boolean firstLine = true;
+        for(String line : inLines) {
+            if(firstLine) {
+                firstLine = false;
+                continue;
+            }
+            String[] toks = line.split(";");
+            try {
+                int oId = Integer.parseInt(toks[ 0 ]);
+                int lId = Integer.parseInt(toks[ 1 ]);
+                int pId = Integer.parseInt(toks[ 2 ]);
+                int quant = Integer.parseInt(toks[ 3 ]);
+                String status = toks[ 4 ];
+                double value = Double.parseDouble(toks[ 5 ]);
+                orders.add(new OrderItem(oId, lId, pId, quant, status, value));
+            } catch (Exception e) {
+                System.out.printf("\n Invalid input");
+            }
+        }
+    }
+
+    public boolean gotThisOrder( int id ){
+        for(OrderItem item : orders) {
+            if(item.getOrder_id()==id) {
+                return true;
+            }
+        }
         return false;
     }
-    public ArrayList<Integer> getAllOrderId(){
-            ArrayList<Integer> orders = new ArrayList<>();
-            // ToDo: Return arrayList of all the unique orderIds
-            return orders;
 
+    public HashSet<OrderItem> findOrders(int oId){
+        HashSet<OrderItem> retOrder = new HashSet<>();
+        orders.forEach(item -> {
+            if(item.getOrder_id() == oId) {
+                retOrder.add(item);
+            }
+        });
+        return retOrder;
     }
-    //
-    public boolean AddItemToOrder( int OrderId, int partNum,  int quantity ){
-            //ToDo:  Search through the orders for OrderNumer and partNum. If it exists
-            //       add the quantity to the exsiting order. However if its status is shipped do not
-            //       add it and return false.
-            // If the orderNumer and partNum is not found then add the order and set lineNumb to 1, and
-            //         status to "new"
 
-            // For example, if the following is the exisiting orders
-                //1233;1;4;2;shipped;500
-                //1236;1;2;2;shipped;500
-                //1236;2;2;1;shipped;200
-                //1236;3;4;1;picked;4200
-                //1236;4;1;1;shipped;600
-            // and your call this method with the following:
-            //  orderId=1236 partNum=4 and quantity=2
-            // change the last order:
-            // from
-            //1236;4;1;1;shipped;600
-            // to:
-            //1236;4;1;3;shipped;600
-            // Example2
-            //  if the method is called with orderId=4444 partNum=4 and quantity=2
-            //  Then add a new order with status new
+    public HashSet<OrderItem> getOrdersByState(String inState ){
+        HashSet<OrderItem> retOrder = new HashSet<>();
+        orders.forEach(item -> {
+            if(item.getStatus().equalsIgnoreCase(inState)) {
+                retOrder.add(item);
+            }
+        });
+        return retOrder;
+    }
 
-            return true;
+    public boolean updateThisOderLineId( int orderId, int lineId, String newStatus ) {
+        ArrayList<String> status = new ArrayList<>(Arrays.asList("new", "staged", "shipped", "picked", "delivered"));
+        if (status.contains(newStatus)) {
+            for (OrderItem item : orders) {
+                if (item.getOrder_id() == orderId && item.getLine_id() == lineId) {
+                    item.setStatus(newStatus);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public HashSet<Integer> getAllOrderId(){
+        HashSet<Integer> orderIds = new HashSet<>();
+        for(OrderItem order : orders) {
+            if(!orderIds.contains(order.getOrder_id())) {
+                orderIds.add(order.getOrder_id());
+            }
+        }
+        return orderIds;
+    }
+
+    public boolean addItemToOrder( int OrderId, int partNum, int quantity ) {
+        boolean retBool = false;
+        if (gotThisOrder(OrderId)) {
+            for (OrderItem item : orders) {
+                if (item.getOrder_id() == OrderId) {
+                    if (item.getPartNum() == partNum && !item.getStatus().equalsIgnoreCase("shipped")) {
+                        item.setQuantity(quantity+item.getQuantity());
+                        retBool = true;
+                    }
+                }
+            }
+        } else {
+            orders.add(new OrderItem(OrderId, 1, partNum, quantity, "new", 0.0));
+            retBool = true;
+        }
+        return retBool;
     }
 }
 
+class OrderProcessorHW2 {
+    public static void main(String[] args) throws FileNotFoundException {
+        OrderManager_Homework2 ol = new OrderManager_Homework2();
+        ol.getOrdersFromFile("data/order_status.csv");
+        ol.addOrder(new OrderItem(9999, 1, 444, 12, "new", 0.0));
+
+        System.out.printf("\nAdded item to Order:9999 - %s", ol.addItemToOrder(9999, 444, 12));
+        System.out.printf("\nAdded item to Order:1235 - %s", ol.addItemToOrder(1235, 1, 10));
+
+        List<Integer> orderIds = new ArrayList<>();
+        for (Integer integer : ol.getAllOrderId()) {
+            orderIds.add(integer);
+        }
+        System.out.printf("\n\n%s", orderIds);
+
+        System.out.printf("\n\nUpdated orderID:999 to shipped - %s", ol.updateThisOderLineId(999, 1, "shipped"));
+
+        System.out.printf("\n\nOrders with status \"Shipped\":");
+        showOrders(ol.getOrdersByState("shipped"));
+
+        System.out.printf("\n\nOrders with status \"new\":");
+        showOrders(ol.getOrdersByState("new"));
+
+        System.out.printf("\n\nOrders with status \"pizzaHut\":");
+        showOrders(ol.getOrdersByState("pizzaHut"));
+
+        System.out.printf("\n\nSearch for order: 9999");
+        System.out.printf("\n  There is and order with ID:9999 - %s", ol.gotThisOrder(9999));
+
+        System.out.printf("\nSearch for order: 112358");
+        System.out.printf("\n  There is and order with ID:112358 - %s", ol.gotThisOrder(112358));
+
+    }
+
+
+    private static void showOrders(HashSet<OrderItem> orders) {
+        for(OrderItem order : orders){
+            System.out.printf("\n  Order: %s", order.toString());
+        }
+    }
+}
