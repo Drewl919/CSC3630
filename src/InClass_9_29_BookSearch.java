@@ -8,6 +8,7 @@ public class InClass_9_29_BookSearch {
         String uAuth = getUserInput(books.keySet());
         System.out.printf("\n uAuth:%s", uAuth);
         Book b = books.get(uAuth);
+        books.containsKey("Tolken");
         System.out.printf("\nBook: %s", b.toString());
 //        HashMap<String, ArrayList<Book>> moreBooks = new
     }
