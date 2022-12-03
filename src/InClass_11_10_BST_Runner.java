@@ -7,7 +7,7 @@ public class InClass_11_10_BST_Runner {
         bst.addNode(56, "Donut");
         bst.addNode(58, "Eggs");
 
-        bst.inOrderTraversal(bst.root);
+        bst.inOrderTrav(bst.root);
         BSTNode b = bst.findNode(58);
         System.out.printf("Node:%s", b.toString());
     }
