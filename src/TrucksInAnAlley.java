@@ -1,5 +1,8 @@
-import lib.FileIO;
+//  Andrew Musielak
+//  CSC3630
 
+
+import lib.FileIO;
 import java.io.FileNotFoundException;
 import java.util.*;
 
@@ -52,7 +55,7 @@ public class TrucksInAnAlley {
                 System.out.printf("\nTry again, id:%s not found.", truckID);
             }
         } catch (Exception e) {
-            System.out.printf("\n\nInvalid input try again.");
+            System.out.printf("\nInvalid input try again.");
         }
         return gotTruck;
     }
