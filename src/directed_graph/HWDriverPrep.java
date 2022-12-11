@@ -1,6 +1,9 @@
 package directed_graph;
+//Andrew Musielak
+//CSC 3630
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -9,11 +12,10 @@ public class HWDriverPrep {
         HWGraph g = createGraph();
         printGraph(g);
         Set<String> keys = g.getKeys();
-        System.out.printf("keys: %s", keys);
         String startCity = "Chicago";
         String layOver = getLayOverCity(keys, startCity);
         Vertex v = g.getThisVertex(startCity, layOver);
-        System.out.printf("\n The connections from Start:%s with layover N:%s are (%s):", startCity, v.label, v.weight);
+        System.out.printf("\nThe connections from Start:%s with layover N:%s are (%s):", startCity, v.label, v.weight);
         showConnections(g, v);
     }
 
@@ -29,39 +31,41 @@ public class HWDriverPrep {
 
     private static String getLayOverCity(Set<String> keys, String startCity) {
         Scanner s = new Scanner(System.in);
-        keys.remove(startCity);
+        Set<String> cities = new HashSet<>();
+        for(String city : keys) {
+            if(!city.equals(startCity)) {
+                cities.add(city);
+            }
+        }
         System.out.printf("\nSelect a layover city (");
         boolean comma = false;
-        for (String key : keys) {
+        for (String city : cities) {
             if (comma) {
-                System.out.printf(", %s", key);
+                System.out.printf(", %s", city);
             } else {
-                System.out.printf("%s", key);
+                System.out.printf("%s", city);
                 comma = true;
             }
         }
         System.out.printf("} -> ");
-        return s.next();
+        String layover;
+        while (true) {
+            layover = s.nextLine();
+            if(!cities.contains(layover)) {
+                System.out.printf("\n%s is not a valid input.", layover);
+            } else if (layover.equalsIgnoreCase("Orlando") || layover.equalsIgnoreCase("Houston")) {
+                System.out.printf("\n%s is not a valid layover city.", layover);
+            } else {
+                return layover;
+            }
+        }
     }
 
     private static void showConnections(HWGraph g, Vertex layOverVertex) {
-        // ToDo: Write this method
-        // What: This method inputs the graph (g) and the layoverVertex.
-        // Output: All of the cities connected to the layover vertex, their distance and total distance from Chicago
-        // E.g.,
-        // The connections from Start:Chicago with layover N:New York are (790):
-        //      Name:Houston Distance:1647 Total Distance:2437
-        //     Name:Orlando Distance:1080 Total Distance:1870
-        int chicagoDist = 0;
-        for (Vertex connection : g.getConnections(layOverVertex.label)) {
-            if (connection.label.equals("Chicago")) {
-                chicagoDist = connection.weight;
-            }
-        }
-        for (Vertex connection : g.getConnections(layOverVertex.label)) {
-            if (!connection.label.equals("Chicago") && !g.getConnections(connection.label).contains("Chicago")) {
-                System.out.printf("\n  Name:%s Distance:%s Total Distance:%s", connection.label, connection.weight, connection.weight + chicagoDist);
-            }
+        String layoverCityName = layOverVertex.label;
+        int layoverCityWeight = layOverVertex.weight;
+        for(Vertex connection : g.getConnections(layoverCityName)) {
+            System.out.printf("\nName:%s   Distance:%s   Total Distance:%s", connection.label, connection.weight, layoverCityWeight+connection.weight);
         }
 
     }
