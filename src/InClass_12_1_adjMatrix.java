@@ -26,7 +26,7 @@ public class InClass_12_1_adjMatrix {
                     String nam = nodes[pos];
                     System.out.printf("\n => %s", nam);
                 } catch (Exception e) {
-                    System.out.printf("\nDrat ... that didnot work:%s", pos);
+                    System.out.printf("\nDrat ... that didn't work:%s", pos);
                 }
             }
             pos++;
